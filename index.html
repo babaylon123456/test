@@ -21,13 +21,23 @@
             font-size: 18px;
             font-weight: bold;
         }
+		#msg {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
     </style>
+	<link rel="stylesheet" href="../layui/css/layui.css" />
+    <script src="../layui/layui.js"></script>
+
 </head>
 <body>
     <h1>兑换码查询</h1>
     <input type="text" id="redemptionCode" placeholder="输入兑换码">
     <button onclick="getRedemptionInfo()">查询</button>
+	<div id="msg"></div>
     <div id="result"></div>
+
     <button id="copyButton" onclick="copyToClipboard()" style="display: none;">复制</button>
     <button id="customerServiceButton" onclick="openCustomerService() "  style="display: none;">联系客服</button>
 
@@ -37,13 +47,16 @@
         function getRedemptionInfo() {
             const code = document.getElementById('redemptionCode').value;
             const xhr = new XMLHttpRequest();
-            //xhr.open('GET', `http://35.227.170.192:5000/redemption?code=${code}`, true);
-			xhr.open('GET', `http://127.0.0.1:5000/redemption?code=${code}`, true);
+            xhr.open('GET', `http://35.227.170.192:5000/redemption?code=${code}`, true);
+			//xhr.open('GET', `http://127.0.0.1:5000/redemption?code=${code}`, true);
             xhr.onload = function() {
                 if (xhr.status === 200) {
                     const response = JSON.parse(xhr.responseText);
                     if (response.info) {
-                        document.getElementById('result').textContent = response.info;
+                        //document.getElementById('result').textContent = response.info;
+						document.getElementById('msg').textContent = '[卡密信息]:--如遇到页面卡住请手动刷新下--' ;					
+						document.getElementById('result').textContent = response.info;
+						document.getElementById('result').style.marginBottom = '20px';
                         document.getElementById('copyButton').style.display = 'inline-block';
 						document.getElementById('customerServiceButton').style.display = 'inline-block';
                     } else {
@@ -59,6 +72,7 @@
             xhr.send();
         }
 
+							
         function copyToClipboard() {
             const redemptionInfo = document.getElementById('result').textContent;
             const textArea = document.createElement('textarea');
