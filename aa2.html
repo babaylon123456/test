@@ -1,166 +1,92 @@
-
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name='viewport' content='width=device-width, minimum-scale=1.0, maximum-scale=1.0' />
-</head>
-<body>
-
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="UTF-8" />
-    <title>兑换码提取卡密</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="../layui/css/layui.css" />
+    <title>兑换码查询</title>
     <style>
-        .container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #5FB878;
-            /* 设置背景颜色为 layui-bg-green */
-        }
-
-        .content {
-            background-color: #fff;
-            /* 设置内容区域背景颜色 */
-            padding: 20px;
-            border-radius: 4px;
-            max-width: 400px;
-            /* 设置固定宽度 */
-        }
-
-        .content-title {
-            font-size: 24px;
+        body {
+            font-family: Arial, sans-serif;
             text-align: center;
-            color: #333;
-            margin-bottom: 20px;
+            padding-top: 50px;
         }
-
-        .form {
-            width: 50%;
-            max-width: 200px;
-            margin: 0 auto;
+        input[type="text"] {
+            padding: 5px 10px;
+            font-size: 16px;
         }
-
-        .form-input {
-            width: 100%;
-            border: 1px solid #000;
-            /* 黑色边框 */
+        button {
+            padding: 5px 10px;
+            font-size: 16px;
         }
-
-        .form-button {
-            width: 100%;
-        }
-
-        .copy-button {
-            width: 100%;
-            text-align: center;
-            margin-top: 10px;
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
         }
     </style>
-</head>
-
-<body>
-    <div class="container">
-        <div class="content">
-            <a href="https://shop.ruxu87.cn/">
-                <img src="guang2.png" alt="Image" style="display: block; margin: 0 auto; width: 400px; height: auto;">
-            </a>
-            <hr class="layui-border-blue"><br><br>
-            <h2 class="content-title" style="color:#ff0012 ;">请用客服发的兑换码在本界面提取</h2>
-            <form id="redeemForm" method="post" class="layui-form form">
-                <div class="layui-form-item">
-                    <input type="text" name="manualCodes" placeholder="请输入兑换码" class="layui-input form-input" />
-                </div>
-                <div class="layui-form-item" style="margin-left: 0px;">
-                    <button type="submit" name="redeem" class="layui-btn layui-btn-normal form-button">
-                        取卡
-                    </button>
-
-                </div>
-            </form>
-            <div id="result" class="layui-container">
-                <!-- 结果将在此处显示 -->
-            </div>
-        </div>
-    </div>
-
+	<link rel="stylesheet" href="../layui/css/layui.css" />
     <script src="../layui/layui.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
-    
+
+</head>
+<body>
+    <h1>兑换码查询</h1>
+    <input type="text" id="redemptionCode" placeholder="输入兑换码">
+    <button onclick="getRedemptionInfo()">查询</button>
+    <div id="result"></div>
+    <button id="copyButton" onclick="copyToClipboard()" style="display: none;">复制</button>
+    <button id="customerServiceButton" onclick="openCustomerService() "  style="display: none;">联系客服</button>
+
     <script>
-        layui.use(["form", "layer"], function () {
-            var form = layui.form;
-            var layer = layui.layer;
+        const customerServiceLink = 'weixin://dl/business/?username=customer_service_wechat';
 
-            document
-                .getElementById("redeemForm")
-                .addEventListener("submit", function (event) {
-                    event.preventDefault();
-                    var manualCodes = document.forms["redeemForm"]["manualCodes"].value;
-
-                    var xhr = new XMLHttpRequest();
-                    xhr.open("POST", "redeem.php", true);
-                    xhr.setRequestHeader(
-                        "Content-type",
-                        "application/x-www-form-urlencoded"
-                    );
-                    xhr.onreadystatechange = function () {
-                        if (xhr.readyState === 4 && xhr.status === 200) {
-                            // 弹出Layui弹窗显示卡密信息
-                            var cardInfo = xhr.responseText;
-
-                            // 检查卡密是否有效
-                            if (cardInfo.includes("无效的兑换码")) {
-                                var contentHtml = '<div style="padding: 20px;">' + cardInfo + '</div>';
-                            } else {
-                                var contentHtml = '<div style="padding: 30px;">' + cardInfo + '</div>';
-                                contentHtml += '<div class="copy-button"><button class="layui-btn layui-btn-primary" id="copyButton">一键复制</button></div><button type="button" class="layui-btn layui-bg-blue" onclick="openContactService()">联系客服</button></div>';
-                                
-                                var clipboard = new ClipboardJS("#copyButton", {
-                                    text: function () {
-                                        return cardInfo;
-                                    }
-                                });
-
-                                clipboard.on("success", function (e) {
-                                    layer.msg("卡密已成功复制到剪贴板", { icon: 6 });
-                                    e.clearSelection();
-                                });
-
-                                clipboard.on("error", function (e) {
-                                    layer.msg("复制失败，请手动复制", { icon: 5 });
-                                });
-                            }
-
-                            var index = layer.open({
-                                type: 1,
-                                title: "【卡密信息】:--如遇到页面卡住请手动刷新下--",
-                                content: contentHtml,
-                                area: "400px",
-                                btn: [],
-                                cancel: function (index, layero) {
-                                    layer.close(index);
-                                    
-                                }
-                            });
-                        }
-                    };
-                    xhr.send("manualCodes=" + manualCodes);
-                });
-        });
-        function openContactService() {
-        window.open("https://work.weixin.qq.com/kfid/kfc72a8da580962218d");
+        function getRedemptionInfo() {
+            const code = document.getElementById('redemptionCode').value;
+            const xhr = new XMLHttpRequest();
+            //xhr.open('GET', `http://35.227.170.192:5000/redemption?code=${code}`, true);
+			xhr.open('GET', `https://mlu0d0sol9.execute-api.us-east-2.amazonaws.com/test1/redemption?code=${code}`, true);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response.info) {
+                        //document.getElementById('result').textContent = response.info;
+						var index = layer.open({
+    type: 1,
+    title: "【卡密信息】:--如遇到页面卡住请手动刷新下--",
+    content: response.info,
+    area: "400px",
+    btn: [],
+    cancel: function (index, layero) {
+        layer.close(index);    
     }
+});
 
+                        document.getElementById('copyButton').style.display = 'inline-block';
+						document.getElementById('customerServiceButton').style.display = 'inline-block';
+                    } else {
+                        document.getElementById('result').textContent = response.error;
+                    }
+                } else {
+                    document.getElementById('result').textContent = '兑换码错误，请重试';
+                }
+            };
+            xhr.onerror = function() {
+                document.getElementById('result').textContent = 'Error fetching redemption info';
+            };
+            xhr.send();
+        }
+
+        function copyToClipboard() {
+            const redemptionInfo = document.getElementById('result').textContent;
+            const textArea = document.createElement('textarea');
+            textArea.value = redemptionInfo;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            alert('已复制到剪贴板！');
+        }
+
+        function openCustomerService() {
+            window.location.href = customerServiceLink;
+        }
     </script>
-</body>
-
-</html>    
 </body>
 </html>
