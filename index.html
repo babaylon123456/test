@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>兑换码查询</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 50px;
+        }
+        input[type="text"] {
+            padding: 5px 10px;
+            font-size: 16px;
+        }
+        button {
+            padding: 5px 10px;
+            font-size: 16px;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>兑换码查询</h1>
+    <input type="text" id="redemptionCode" placeholder="输入兑换码">
+    <button onclick="getRedemptionInfo()">查询</button>
+    <div id="result"></div>
+    <button id="copyButton" onclick="copyToClipboard()" style="display: none;">复制</button>
+    <button id="customerServiceButton" onclick="openCustomerService() "  style="display: none;">联系客服</button>
+
+    <script>
+        const customerServiceLink = 'weixin://dl/business/?username=customer_service_wechat';
+
+        function getRedemptionInfo() {
+            const code = document.getElementById('redemptionCode').value;
+            const xhr = new XMLHttpRequest();
+            //xhr.open('GET', `http://35.227.170.192:5000/redemption?code=${code}`, true);
+			xhr.open('GET', `http://127.0.0.1:5000/redemption?code=${code}`, true);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response.info) {
+                        document.getElementById('result').textContent = response.info;
+                        document.getElementById('copyButton').style.display = 'inline-block';
+						document.getElementById('customerServiceButton').style.display = 'inline-block';
+                    } else {
+                        document.getElementById('result').textContent = response.error;
+                    }
+                } else {
+                    document.getElementById('result').textContent = '兑换码错误，请重试';
+                }
+            };
+            xhr.onerror = function() {
+                document.getElementById('result').textContent = 'Error fetching redemption info';
+            };
+            xhr.send();
+        }
+
+        function copyToClipboard() {
+            const redemptionInfo = document.getElementById('result').textContent;
+            const textArea = document.createElement('textarea');
+            textArea.value = redemptionInfo;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            alert('已复制到剪贴板！');
+        }
+
+        function openCustomerService() {
+            window.location.href = customerServiceLink;
+        }
+    </script>
+</body>
+</html>
