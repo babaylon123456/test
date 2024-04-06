@@ -27,9 +27,8 @@
             font-weight: bold;
         }
     </style>
-	<link rel="stylesheet" href="../layui/css/layui.css" />
-    <script src="../layui/layui.js"></script>
 
+    <script src="config.json"></script>
 </head>
 <body>
     <h1>兑换码查询</h1>
@@ -45,7 +44,7 @@
         const customerServiceLink = 'weixin://dl/business/?username=customer_service_wechat';
 
         function getRedemptionInfo() {
-			const config = require('./config.json');
+		
             const code = document.getElementById('redemptionCode').value;
             const xhr = new XMLHttpRequest();
 			//GOOGLE
