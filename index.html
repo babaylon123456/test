@@ -45,13 +45,14 @@
         const customerServiceLink = 'weixin://dl/business/?username=customer_service_wechat';
 
         function getRedemptionInfo() {
+			const config = require('./config.json');
             const code = document.getElementById('redemptionCode').value;
             const xhr = new XMLHttpRequest();
 			//GOOGLE
             //xhr.open('GET', `http://35.227.170.192:5000/redemption?code=${code}`, true);   
 			//xhr.open('GET', `http://127.0.0.1:5000/redemption?code=${code}`, true);
 			//AWS
-			xhr.open('GET', `http://18.223.124.174:5000/redemption?code=${code}`, true);   
+			xhr.open('GET', `${config.serverUrl}/redemption?code=${code}`, true);   
             xhr.onload = function() {
                 if (xhr.status === 200) {
                     const response = JSON.parse(xhr.responseText);
