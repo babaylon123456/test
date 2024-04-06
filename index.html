@@ -70,7 +70,7 @@
                 }
             };
             xhr.onerror = function() {
-                document.getElementById('result').textContent = 'Error fetching redemption info';
+                document.getElementById('result').textContent = '服务器开小差，请重试';
             };
             xhr.send();
         }
